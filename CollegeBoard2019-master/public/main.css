@@ -1,0 +1,38 @@
+html {
+	clip: auto;
+	position: absolute;
+	overflow: hidden;
+	width: 100%;
+	height: 100%;
+}
+
+#canvasTitle {
+	display: none;
+	animation: fadein 5s;
+}
+
+#canvasMeteor {
+	display : none;
+}
+
+#imagesTitle {
+	display: none;
+	animation: fadein 5s;
+}
+
+#imagesMeteor {
+	display: none;
+}
+
+#imagesHero{
+	display: none;
+}
+
+#secret {
+	display: none;
+}
+
+@keyframes fadein {
+	from { opacity: 0; }
+	to { opacity: 1; }
+}
