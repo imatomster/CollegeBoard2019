@@ -383,7 +383,7 @@ function drawMeteorText(){
 	if (booleanUse == true){
 		ctxM.beginPath();
 		ctxM.font = "50px Comic Sans MS";
-		ctxM.fillStyle = "green";
+		ctxM.strokeStyle = "yellow";
 		ctxM.strokeText("Click Anywhere to Start!", 
 			rcv/2 - ctxM.measureText("Click Anywhere to Start!").width/2,
 			bcv/2 - 75);
@@ -444,7 +444,7 @@ function moveHero(e){
 	        heroY-=1;
 	       	var jump = setInterval(function() { 
 	       		jumpHero(hero, hero.width, hero.height, jump); }, 
-	       		30);} 
+	       		10);} 
 		//up arrow
 	    // else if (e.keyCode == 40) {
 	    //     heroY+=20;
@@ -461,7 +461,7 @@ canvasM.addEventListener('click', engageMeteor, false);
 function engageMeteor (){
 	if (booleanUse == true){
 		cleanCanvas();
-		fallMeteor();
+		spawnMeteor();
 	}
 }
 
@@ -471,50 +471,107 @@ function cleanCanvas(){
 	startM();
 }
 
-function fallMeteor(){
-	let i = 0;
-	while (true) {
-		i++
-		spawnMeteor(i);
-		setInterval(drawMeteor, k);
-	}
-
-	for (let i=0; ) {
-		moveMeteor(i)
-	}
-
-	// starts falling
-	setInterval(drawMeteor, k);
-  	function drawMeteor() {
-		if(y < 700){
-			y++;
-			meteor.style.top = y + 'px';
-		}
+function spawnMeteor(){
+	for (let i = 0; i < 5; i++) {
+		drawMeteor(i);
 	}
 }
 
-function spawnMeteor(id) {
-	var images = document.getElementById('imagesMeteor');
-	images.innerHTML += `<img id="meteor${id}"
+function drawMeteor(id) {
+	var meteorSet = document.getElementById('meteorSet');
+	meteorSet.style.display = "block";
+	meteorSet.innerHTML += `<img id="meteor${id}"
 						src="images/meteor.png">`
 	var meteor = document.getElementById(`meteor${id}`); 
 
-
-	var mArr = [];
-	var x = Math.floor(Math.random() * 1140) + 150;
+	var k = Math.floor(Math.random() * 20) + 10;
+	var x = Math.floor(Math.random() * 850) + 100;
 	var y = 0;
-	var k = Math.floor(Math.random() * 30) + 5;
 	var mPixel = Math.floor(Math.random() * 150) + 50;
-
 
 	meteor.style.display = "block";
 	meteor.style.position = "absolute";
 	meteor.style.width = mPixel + 'px';
 	meteor.style.height = mPixel + 'px';
-	console.log(meteor.width, meteor.height, mPixel);
 	meteor.style.left = x + 'px';
 	meteor.style.top = y + 'px';
+	meteor.style.zIndex = 20;
+	meteor.style.opacity = 0;
+
+	setInterval(fallMeteor, k);
+	function fallMeteor() {
+		var meteor = document.getElementById(`meteor${id}`)
+		if(y < 720){
+			// moves it down screen
+			y++;
+			meteor.style.top = y + 'px';
+
+			//fade in
+			if (y == 2){
+				fadeIn();
+				function fadeIn() {
+					meteor.style.opacity = 0;
+				    var fadeTop = setInterval(function () {
+				        if (meteor.style.opacity < 1) {
+				            meteor.style.opacity -= -0.1;
+				        } else {
+				            clearInterval(fadeTop);
+				        }
+				    }, 60);
+				}
+			}
+
+			// fade out
+			if (y == 525){
+				fadeOut();
+				function fadeOut() {
+				    meteor.style.opacity = 1;
+				    var fadeBot = setInterval(function () {
+				        if (meteor.style.opacity > 0) {
+				            meteor.style.opacity -= 0.1;
+				        } else {
+				            clearInterval(fadeBot);
+				        }
+				    }, 60);
+				}
+			}
+		}else if (y == 720){
+			y = 0;
+			mPixel = Math.floor(Math.random() * 150) + 50;
+			x = Math.floor(Math.random() * 850) + 100;
+		}
+
+		var collisionCheck = false;
+		collisionCheck = checkCollide(hero, meteor);
+		if (collisionCheck == true){
+			gameOver();
+		}
+	}
 }
+
+// https://stackoverflow.com/questions/13916966/adding-collision-detection-to-images-drawn-on-canvas
+function checkCollide(a, b){
+	if (a.x < b.x + b.width && a.x + a.width > b.x
+        && a.y < b.y + b.height / 4 && a.y + a.height > b.y) {
+        return true;
+	}
+}
+
+
+function gameOver(){
+	// draw gameover
+	ctxM.beginPath();
+	ctxM.font = "100px Comic Sans MS";
+	ctxM.strokeStyle = "yellow";
+	ctxM.strokeText("Game Over!", 
+		rcv/2 - ctxM.measureText("Game Over!").width/2,
+		bcv/2 - 75);
+	setTimeout(function() { 
+		meteorToTitle();
+		document.getElementById("meteorSet").innerHTML = "";
+	} , 5000)
+}
+
 
 function meteorToTitle(){
 	//opens titlecanvas
@@ -527,6 +584,7 @@ function meteorToTitle(){
 	document.getElementById("imagesMeteor").style.display = "none";
 	document.getElementById("imagesHero").style.display = "none";
 
+	document.getElementById("meteorSet").style.display = "none";
 	// clears m canvas
 	ctxM.clearRect(0, 0, canvasM.width, canvasM.height);
 }

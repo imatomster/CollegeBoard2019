@@ -22,21 +22,28 @@ html {
 
 #imagesMeteor {
 	display: none;
+
 }
 
 #imagesHero{
 	display: none;
+	position: "absolute";
+	z-index: 15;
 }
 
 #secret {
 	display: none;
 }
 
-#meteor {
+#meteorSet {
 	display: none;
+	position: "absolute";
 	width: 150px;
 	height: 150px;
+	z-index: 20;
+/*	animation: fadein 3s;*/
 }
+
 @keyframes fadein {
 	from { opacity: 0; }
 	to { opacity: 1; }
