@@ -32,6 +32,11 @@ html {
 	display: none;
 }
 
+#meteor {
+	display: none;
+	width: 150px;
+	height: 150px;
+}
 @keyframes fadein {
 	from { opacity: 0; }
 	to { opacity: 1; }

@@ -472,15 +472,48 @@ function cleanCanvas(){
 }
 
 function fallMeteor(){
-	document.getElementById("meteor").style.display = "block";
-	var meteor = document.getElementById('meteor');
+	let i = 0;
+	while (true) {
+		i++
+		spawnMeteor(i);
+		setInterval(drawMeteor, k);
+	}
+
+	for (let i=0; ) {
+		moveMeteor(i)
+	}
+
+	// starts falling
+	setInterval(drawMeteor, k);
+  	function drawMeteor() {
+		if(y < 700){
+			y++;
+			meteor.style.top = y + 'px';
+		}
+	}
+}
+
+function spawnMeteor(id) {
+	var images = document.getElementById('imagesMeteor');
+	images.innerHTML += `<img id="meteor${id}"
+						src="images/meteor.png">`
+	var meteor = document.getElementById(`meteor${id}`); 
+
+
+	var mArr = [];
+	var x = Math.floor(Math.random() * 1140) + 150;
+	var y = 0;
+	var k = Math.floor(Math.random() * 30) + 5;
+	var mPixel = Math.floor(Math.random() * 150) + 50;
+
+
+	meteor.style.display = "block";
 	meteor.style.position = "absolute";
-	meteor.style.top = 100 + 'px';
-	meteor.style.left = 100 + 'px';
- //  	setInterval(drawMeteor, 30);
- //  	function drawMeteor() {
-		
-	// }
+	meteor.style.width = mPixel + 'px';
+	meteor.style.height = mPixel + 'px';
+	console.log(meteor.width, meteor.height, mPixel);
+	meteor.style.left = x + 'px';
+	meteor.style.top = y + 'px';
 }
 
 function meteorToTitle(){
