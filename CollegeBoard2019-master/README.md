@@ -8,6 +8,9 @@ You play as a character and try to dodge the meteors that rain from the sky. If 
 
 Within the public folder is the code for the game!
 
+Watch a clip of my game running!
+   - https://youtu.be/XGybBc8qIkc
+
 Languages Used:
   - Html
   - Javascript
