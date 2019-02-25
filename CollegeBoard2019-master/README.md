@@ -13,7 +13,7 @@ Watch a clip of my game running!
 
 Languages Used:
   - Html
-  - Javascript
+  - JavaScript
   - Css
   
 Outside Sources: 
