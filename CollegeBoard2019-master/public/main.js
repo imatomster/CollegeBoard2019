@@ -12,6 +12,7 @@ var tcv = 15;
 var lcv = 15;
 var pos = 0;
 var increase = true;
+var booleanUse = true;
 // RESET VAR
 rcv = canvasT.width - 15;
 bcv = canvasT.height - 20;
@@ -19,6 +20,7 @@ tcv = 15;
 lcv = 15;
 pos = 0;
 increase = true;
+booleanUse = true;
 
 // Setting up Event Listener
 var canvasTLeft = canvasT.offsetLeft;
@@ -248,6 +250,7 @@ function titleToMeteor(){
 	//opens up images
 	document.getElementById("imagesMeteor").style.display = "block";
 	document.getElementById("imagesHero").style.display = "block";
+	document.getElementById("meteor").style.display = "none";
 	/* var secretButton = document.getElementById("secret");
 	secretButton.innerHTML = `<img id="moon"
 		src="images/moon.png" style="width:100px" style="height:100px">`; */
@@ -260,6 +263,7 @@ function titleToMeteor(){
 	lcv = 15;
 	heroX = 0;
 	heroY = 0;
+	booleanUse = true;
 	// resets up canvas m
 	startM();
 }
@@ -309,6 +313,7 @@ function drawBGM(){
 	drawBricks();
 	drawSun();
 	drawBack();
+	drawMeteorText();
 }
 function drawBorderM(){
 	ctxM.beginPath();
@@ -374,6 +379,17 @@ function drawBack(){
 	ctxM.strokeText("Back", posX + ctxM.measureText("Back").width/2 - 5, posY + 35);
 }
 
+function drawMeteorText(){
+	if (booleanUse == true){
+		ctxM.beginPath();
+		ctxM.font = "50px Comic Sans MS";
+		ctxM.fillStyle = "green";
+		ctxM.strokeText("Click Anywhere to Start!", 
+			rcv/2 - ctxM.measureText("Click Anywhere to Start!").width/2,
+			bcv/2 - 75);
+	}
+}
+
 function drawHero(){
 	var brickLineWidth = 2.5;
 	var hero = document.getElementById('hero');
@@ -388,13 +404,13 @@ function drawHero(){
 function jumpHero(hero, heroWidth, heroHeight, jump){
 	hero.style.position = "absolute";
 	if (heroY < 0){
-		if(increase && heroY >= 300){
+		if(increase && heroY >= -30){
 			hero.style.top = heroY + bcv -  80 - heroHeight + 6 + 'px';
 			heroY--;
 		}else if (!increase && heroY <= 0){
 			hero.style.top = heroY + bcv -  80 - heroHeight + 6 + 'px';
 			heroY++;
-		}else if (heroY <= 300){
+		}else if (heroY <= -30){
 			increase = false;
 			heroY++;
 		}else if (heroY >= 0) {
@@ -409,18 +425,27 @@ function jumpHero(hero, heroWidth, heroHeight, jump){
 
 function moveHero(e){
 	if (document.getElementById("canvasMeteor").style.display == "block"){
+		let tempX = heroX + rcv / 2 + 70 + 20
+		let tempX2 = heroX + rcv / 2 - 30
 		if (e.keyCode == 39) {
-	        heroX+=20;
-	        drawHero();
+			if (tempX < rcv){
+		        heroX+=20;
+		        drawHero();
+		    }
 	    } //right arrow
 	    else if (e.keyCode == 37) {
-	        heroX-=20;
-	        drawHero();
+	        if (tempX2 > lcv){
+		        heroX-=20;
+		        drawHero();
+		    }
 	    } //left arrow
 	    else if (e.keyCode == 38 && heroY == 0) {
-	        heroY-=20;
-	       	var jump = setInterval(function() { jumpHero(hero, hero.width, hero.height, jump); }, 30);} 
-			//up arrow
+	    	increase = true;
+	        heroY-=1;
+	       	var jump = setInterval(function() { 
+	       		jumpHero(hero, hero.width, hero.height, jump); }, 
+	       		30);} 
+		//up arrow
 	    // else if (e.keyCode == 40) {
 	    //     heroY+=20;
 	    //     drawHero();
@@ -429,6 +454,34 @@ function moveHero(e){
 }
 
 window.addEventListener("keydown", moveHero, false);
+
+
+canvasM.addEventListener('click', engageMeteor, false);
+
+function engageMeteor (){
+	if (booleanUse == true){
+		cleanCanvas();
+		fallMeteor();
+	}
+}
+
+function cleanCanvas(){
+	booleanUse = false;
+	ctxM.clearRect(0, 0, canvasM.width, canvasM.height);
+	startM();
+}
+
+function fallMeteor(){
+	document.getElementById("meteor").style.display = "block";
+	var meteor = document.getElementById('meteor');
+	meteor.style.position = "absolute";
+	meteor.style.top = 100 + 'px';
+	meteor.style.left = 100 + 'px';
+ //  	setInterval(drawMeteor, 30);
+ //  	function drawMeteor() {
+		
+	// }
+}
 
 function meteorToTitle(){
 	//opens titlecanvas
