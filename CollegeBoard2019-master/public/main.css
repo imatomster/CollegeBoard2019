@@ -41,7 +41,6 @@ html {
 	width: 150px;
 	height: 150px;
 	z-index: 20;
-/*	animation: fadein 3s;*/
 }
 
 @keyframes fadein {

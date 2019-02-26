@@ -1,3 +1,5 @@
+/* JAVASCRIPT */
+
 /* CANVASTITLE */
 // UNHIDE CANVAS
 document.getElementById("canvasTitle").style.display = "block";
@@ -26,6 +28,10 @@ booleanUse = true;
 var canvasTLeft = canvasT.offsetLeft;
 var canvasTTop = canvasT.offsetTop;
 var canvasTElements = [];
+
+
+// EXTERNAL SOURCE : START
+// https://stackoverflow.com/questions/5014851/get-click-event-of-each-rectangle-inside-canvas
 // AddEventListener for clicks
 canvasT.addEventListener('click', function(event) {
     var x = event.pageX - canvasTLeft,
@@ -39,6 +45,8 @@ canvasT.addEventListener('click', function(event) {
         }
     });
 }, false);
+// END
+
 
 // START
 function start(){
@@ -217,7 +225,7 @@ function drawPlay(){
 	var width = 120;
 	var height = 50;
 	var color = "yellow";
-	// push element to array
+	// push the button to the array
 	canvasTElements.push({
 	    colour: color,
 	    width: width,
@@ -250,12 +258,8 @@ function titleToMeteor(){
 	//opens up images
 	document.getElementById("imagesMeteor").style.display = "block";
 	document.getElementById("imagesHero").style.display = "block";
-	document.getElementById("meteor").style.display = "none";
-	/* var secretButton = document.getElementById("secret");
-	secretButton.innerHTML = `<img id="moon"
-		src="images/moon.png" style="width:100px" style="height:100px">`; */
-	// no need to clear first canvas
-	// can work on that later
+	document.getElementById("meteorSet").style.display = "none";
+
 	// RESET VARIABLES
 	rcv = canvasM.width - 15;
 	bcv = canvasM.height - 20;
@@ -280,7 +284,10 @@ lcv = 15;
 
 var heroX = 0;
 var heroY = 0;
-
+var collisionCheck = false;
+// EXTERNAL SOURCE : START
+// https://stackoverflow.com/questions/5014851/get-click-event-of-each-rectangle-inside-canvas
+// AddEventListener for clicks
 // Setting up Event Listener
 var canvasMLeft = canvasM.offsetLeft;
 var canvasMTop = canvasM.offsetTop;
@@ -298,6 +305,7 @@ canvasM.addEventListener('click', function(event) {
         }
     });
 }, false);
+// END
 
 //Functions
 function startM (){
@@ -402,21 +410,26 @@ function drawHero(){
 }
 
 function jumpHero(hero, heroWidth, heroHeight, jump){
+	// Sets the css to absolute so that the image can move on the canvas
 	hero.style.position = "absolute";
+	// begins if function with the "heroY" being the main determining var
 	if (heroY < 0){
+		// Increase is like a switch which tells whether or not to raise "heroY"
 		if(increase && heroY >= -30){
+			// the highest jump point is 30 px off the ground 
+			// If the hero has not reached its highest jump point then shift the top position pixel up
 			hero.style.top = heroY + bcv -  80 - heroHeight + 6 + 'px';
 			heroY--;
 		}else if (!increase && heroY <= 0){
+			// If the hero has reached its highest jump point then shift the top position pixel down
 			hero.style.top = heroY + bcv -  80 - heroHeight + 6 + 'px';
 			heroY++;
 		}else if (heroY <= -30){
+			// if the hero is at its high, flip the increase switch to fall back down
 			increase = false;
 			heroY++;
-		}else if (heroY >= 0) {
-			increase = true;
-			heroY--;
 		}
+	// If the hero is back on the ground (heroY = 0) then end the interval and the jump is over	
 	} else if (heroY == 0){
 		clearInterval(jump);
 		heroY = 0;
@@ -427,29 +440,28 @@ function moveHero(e){
 	if (document.getElementById("canvasMeteor").style.display == "block"){
 		let tempX = heroX + rcv / 2 + 70 + 20
 		let tempX2 = heroX + rcv / 2 - 30
+
+		// when right arrow key is pressed
 		if (e.keyCode == 39) {
 			if (tempX < rcv){
 		        heroX+=20;
 		        drawHero();
 		    }
-	    } //right arrow
+	    }
+	    // when left arrow key is pressed
 	    else if (e.keyCode == 37) {
 	        if (tempX2 > lcv){
 		        heroX-=20;
 		        drawHero();
 		    }
-	    } //left arrow
+	    }
+	    // when up arrow key is pressed
 	    else if (e.keyCode == 38 && heroY == 0) {
 	    	increase = true;
 	        heroY-=1;
 	       	var jump = setInterval(function() { 
 	       		jumpHero(hero, hero.width, hero.height, jump); }, 
 	       		10);} 
-		//up arrow
-	    // else if (e.keyCode == 40) {
-	    //     heroY+=20;
-	    //     drawHero();
-	    // } //down arrow
 	}	
 }
 
@@ -477,6 +489,7 @@ function spawnMeteor(){
 	}
 }
 
+
 function drawMeteor(id) {
 	var meteorSet = document.getElementById('meteorSet');
 	meteorSet.style.display = "block";
@@ -498,7 +511,7 @@ function drawMeteor(id) {
 	meteor.style.zIndex = 20;
 	meteor.style.opacity = 0;
 
-	setInterval(fallMeteor, k);
+	var commenceMeteor = setInterval(fallMeteor, k);
 	function fallMeteor() {
 		var meteor = document.getElementById(`meteor${id}`)
 		if(y < 720){
@@ -539,41 +552,50 @@ function drawMeteor(id) {
 			y = 0;
 			mPixel = Math.floor(Math.random() * 150) + 50;
 			x = Math.floor(Math.random() * 850) + 100;
+			meteor.style.width = mPixel + 'px';
+			meteor.style.height = mPixel + 'px';
+			meteor.style.left = x + 'px';
 		}
 
-		var collisionCheck = false;
 		collisionCheck = checkCollide(hero, meteor);
 		if (collisionCheck == true){
 			gameOver();
+			document.getElementById("meteorSet").innerHTML = "";
+ 			clearInterval(commenceMeteor);
 		}
 	}
 }
 
+// EXTERNAL SOUCE: START
 // https://stackoverflow.com/questions/13916966/adding-collision-detection-to-images-drawn-on-canvas
 function checkCollide(a, b){
+	console.log("run");
 	if (a.x < b.x + b.width && a.x + a.width > b.x
         && a.y < b.y + b.height / 4 && a.y + a.height > b.y) {
         return true;
 	}
 }
-
+// END
 
 function gameOver(){
-	// draw gameover
+	// Draw gameover
 	ctxM.beginPath();
 	ctxM.font = "100px Comic Sans MS";
 	ctxM.strokeStyle = "yellow";
 	ctxM.strokeText("Game Over!", 
 		rcv/2 - ctxM.measureText("Game Over!").width/2,
 		bcv/2 - 75);
+
+
 	setTimeout(function() { 
 		meteorToTitle();
-		document.getElementById("meteorSet").innerHTML = "";
 	} , 5000)
 }
 
 
 function meteorToTitle(){
+	collisionCheck = true;
+	booleanUse = false;
 	//opens titlecanvas
 	document.getElementById("canvasTitle").style.display = "block";
 	//opens images
