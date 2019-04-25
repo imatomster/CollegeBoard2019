@@ -81,6 +81,7 @@ function drawBG(){
 	drawPlay();
 	drawSign();	
 	drawTitle();
+	drawInstructions();
 }
 function bg(){
 	//BLUE BG
@@ -96,7 +97,14 @@ function drawTitle(){
 	ctx.beginPath();
 	ctx.font = "50px Comic Sans MS";
 	ctx.fillStyle = "red";
-	ctx.strokeText("CollegeBoard2019!", canvasT.width/2 - ctx.measureText("CollegeBoard2019").width/2, canvasT.height/4 - 15);
+	ctx.strokeText("Meteor Avalanche!", canvasT.width/2 - ctx.measureText("Meteor Avalanche!").width/2, canvasT.height/4 - 15);
+}
+function drawInstructions(){
+	//TITLE TEXT
+	ctx.beginPath();
+	ctx.font = "50px Comic Sans MS";
+	ctx.fillStyle = "red";
+	ctx.strokeText("Instructions:", canvasT.width/2 - ctx.measureText("Instructions:").width/2, canvasT.height - 250);
 }
 function drawFLOOR(){
 	/* FLOOR */
@@ -276,15 +284,11 @@ function titleToMeteor(){
 // CANVAS SETUP
 var canvasM = document.getElementById("canvasMeteor");
 var ctxM = canvasM.getContext("2d");
-//RESET VAR
-rcv = canvasM.width - 15;
-bcv = canvasM.height - 20;
-tcv = 15;
-lcv = 15;
-
+// NEW VAR
 var heroX = 0;
 var heroY = 0;
 var collisionCheck = false;
+var meteorList = [];
 // EXTERNAL SOURCE : START
 // https://stackoverflow.com/questions/5014851/get-click-event-of-each-rectangle-inside-canvas
 // AddEventListener for clicks
@@ -484,7 +488,7 @@ function cleanCanvas(){
 }
 
 function spawnMeteor(){
-	for (let i = 0; i < 5; i++) {
+	for (let i = 0; i < 10; i++) {
 		drawMeteor(i);
 	}
 }
@@ -511,7 +515,7 @@ function drawMeteor(id) {
 	meteor.style.zIndex = 20;
 	meteor.style.opacity = 0;
 
-	var commenceMeteor = setInterval(fallMeteor, k);
+	meteorList[id] = setInterval(fallMeteor, k);
 	function fallMeteor() {
 		var meteor = document.getElementById(`meteor${id}`)
 		if(y < 720){
@@ -561,7 +565,10 @@ function drawMeteor(id) {
 		if (collisionCheck == true){
 			gameOver();
 			document.getElementById("meteorSet").innerHTML = "";
- 			clearInterval(commenceMeteor);
+			for(let i = 0; i < 10; i++){
+				clearInterval(meteorList[i]);
+			}
+			// clearInterval(commenceMeteor);
 		}
 	}
 }
@@ -569,7 +576,6 @@ function drawMeteor(id) {
 // EXTERNAL SOUCE: START
 // https://stackoverflow.com/questions/13916966/adding-collision-detection-to-images-drawn-on-canvas
 function checkCollide(a, b){
-	console.log("run");
 	if (a.x < b.x + b.width && a.x + a.width > b.x
         && a.y < b.y + b.height / 4 && a.y + a.height > b.y) {
         return true;
@@ -596,6 +602,14 @@ function gameOver(){
 function meteorToTitle(){
 	collisionCheck = true;
 	booleanUse = false;
+
+	// Clear the Array for the Meteors
+	for(let i = 0; i < 10; i++){
+		clearInterval(meteorList[i]);
+	}
+	meteorList = [];
+
+
 	//opens titlecanvas
 	document.getElementById("canvasTitle").style.display = "block";
 	//opens images
