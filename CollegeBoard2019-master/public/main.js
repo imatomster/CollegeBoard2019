@@ -15,14 +15,8 @@ var lcv = 15;
 var pos = 0;
 var increase = true;
 var booleanUse = true;
-// RESET VAR
-rcv = canvasT.width - 15;
-bcv = canvasT.height - 20;
-tcv = 15;
-lcv = 15;
-pos = 0;
-increase = true;
-booleanUse = true;
+var highScore = 0;
+var score = 0;
 
 // Setting up Event Listener
 var canvasTLeft = canvasT.offsetLeft;
@@ -81,7 +75,7 @@ function drawBG(){
 	drawPlay();
 	drawSign();	
 	drawTitle();
-	drawInstructions();
+	drawHighScore();
 }
 function bg(){
 	//BLUE BG
@@ -94,17 +88,44 @@ function bg(){
 }
 function drawTitle(){
 	//TITLE TEXT
+	ctx.lineWidth = 3;
 	ctx.beginPath();
-	ctx.font = "50px Comic Sans MS";
-	ctx.fillStyle = "red";
-	ctx.strokeText("Meteor Avalanche!", canvasT.width/2 - ctx.measureText("Meteor Avalanche!").width/2, canvasT.height/4 - 15);
+	ctx.font = "65px Comic Sans MS";
+	ctx.strokeStyle = "black";
+	ctx.strokeText("Meteor Avalanche!", canvasT.width/2 - ctx.measureText("Meteor Avalanche!").width/2, canvasT.height/4 - 10);
+	ctx.closePath();
 }
-function drawInstructions(){
-	//TITLE TEXT
+function drawHighScore(){
+	ctx.lineWidth = 3;
+	// HIGH SCORE TEXT AND UNDERLINE
 	ctx.beginPath();
 	ctx.font = "50px Comic Sans MS";
-	ctx.fillStyle = "red";
-	ctx.strokeText("Instructions:", canvasT.width/2 - ctx.measureText("Instructions:").width/2, canvasT.height - 250);
+	ctx.strokeStyle = "black";
+	ctx.strokeText("High Score:", canvasT.width/2 - ctx.measureText("High Score:").width/2, canvasT.height - 250);
+	ctx.closePath();
+
+	ctx.beginPath();
+	ctx.lineWidth = 5;
+	ctx.strokeStyle = "black";
+	ctx.moveTo(canvasT.width/2 - ctx.measureText("High Score:").width/2, canvasT.height - 240);
+	ctx.lineTo(canvasT.width/2 + ctx.measureText("High Score:").width/2, canvasT.height - 240);
+	ctx.stroke();
+	ctx.closePath();
+
+	//HIGH SCORE AND UNDERLINE
+	ctx.beginPath();
+	ctx.font = "50px Comic Sans MS";
+	ctx.strokeStyle = "yellow";
+	ctx.strokeText(highScore, canvasT.width/2 - ctx.measureText(highScore).width/2, canvasT.height - 175);
+	ctx.closePath();
+
+	ctx.beginPath();
+	ctx.lineWidth = 5;
+	ctx.strokeStyle = "yellow";
+	ctx.moveTo(canvasT.width/2 - ctx.measureText(highScore).width/2, canvasT.height - 165);
+	ctx.lineTo(canvasT.width/2 + ctx.measureText(highScore).width/2, canvasT.height - 165);
+	ctx.stroke();
+	ctx.closePath();
 }
 function drawFLOOR(){
 	/* FLOOR */
@@ -276,6 +297,7 @@ function titleToMeteor(){
 	heroX = 0;
 	heroY = 0;
 	booleanUse = true;
+	score = 0;
 	// resets up canvas m
 	startM();
 }
@@ -317,6 +339,45 @@ function startM (){
 		drawBGM();
 		drawBorderM();
 		drawHero();
+	}
+}
+
+function keepScore(){
+	score = 0;
+	//Initial Score
+	drawScore();
+	function drawScore(){
+		//SCORE AND UNDERLINE
+		ctxM.beginPath();
+		ctx.lineWidth = 1;
+		ctxM.font = "50px Comic Sans MS";
+		ctxM.strokeStyle = "yellow";
+		ctxM.strokeText(score, canvasM.width/2, canvasM.height - 40);
+		ctxM.closePath();
+
+		ctxM.beginPath();
+		ctxM.lineWidth = 5;
+		ctxM.strokeStyle = "yellow";
+		ctxM.moveTo(canvasM.width/2, canvasM.height - 30);
+		ctxM.lineTo(canvasM.width/2 + ctxM.measureText(score).width, canvasM.height - 30);
+		ctxM.stroke();
+		ctxM.closePath();
+	}
+
+	// Start Counting
+	var scoreCount = setInterval(countScore, 1000);
+	function countScore(){
+		score++;
+		drawBricks();
+		drawScore();
+
+		if (collisionCheck == true){
+			clearInterval(scoreCount);
+			if (score > highScore){
+				highScore = score;
+				score = 0;
+			}
+		}
 	}
 }
 
@@ -477,6 +538,7 @@ canvasM.addEventListener('click', engageMeteor, false);
 function engageMeteor (){
 	if (booleanUse == true){
 		cleanCanvas();
+		keepScore();
 		spawnMeteor();
 	}
 }
@@ -502,7 +564,7 @@ function drawMeteor(id) {
 	var meteor = document.getElementById(`meteor${id}`); 
 
 	var k = Math.floor(Math.random() * 20) + 10;
-	var x = Math.floor(Math.random() * 850) + 100;
+	var x = Math.floor(Math.random() * 900) + 75;
 	var y = 0;
 	var mPixel = Math.floor(Math.random() * 150) + 50;
 
@@ -561,14 +623,15 @@ function drawMeteor(id) {
 			meteor.style.left = x + 'px';
 		}
 
-		collisionCheck = checkCollide(hero, meteor);
-		if (collisionCheck == true){
-			gameOver();
-			document.getElementById("meteorSet").innerHTML = "";
-			for(let i = 0; i < 10; i++){
-				clearInterval(meteorList[i]);
+		if (y < 540){
+			collisionCheck = checkCollide(hero, meteor);
+			if (collisionCheck == true){
+				gameOver();
+				document.getElementById("meteorSet").innerHTML = "";
+				for(let i = 0; i < 10; i++){
+					clearInterval(meteorList[i]);
+				}
 			}
-			// clearInterval(commenceMeteor);
 		}
 	}
 }
@@ -602,13 +665,13 @@ function gameOver(){
 function meteorToTitle(){
 	collisionCheck = true;
 	booleanUse = false;
+	score = 0;
 
 	// Clear the Array for the Meteors
 	for(let i = 0; i < 10; i++){
 		clearInterval(meteorList[i]);
 	}
 	meteorList = [];
-
 
 	//opens titlecanvas
 	document.getElementById("canvasTitle").style.display = "block";
@@ -623,4 +686,7 @@ function meteorToTitle(){
 	document.getElementById("meteorSet").style.display = "none";
 	// clears m canvas
 	ctxM.clearRect(0, 0, canvasM.width, canvasM.height);
+	drawMountains();
+	drawFLOOR();
+	drawHighScore();
 }
